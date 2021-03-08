@@ -10,3 +10,4 @@
 1. Need to set the kernel in the jupyter notebook. If not, the 'pip list' will show the packages in the host.  
 2. I set time.sleep to wait the jupyter notebook information.  
 3. IP I use can connect google.com, maybe there are more solutions to set in the future.  
+4. 'del_notebook.sh' just help remove python jobs.  
