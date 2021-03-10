@@ -1,12 +1,12 @@
 {% extends 'base.html' %}
 
 {% block head %}
-<title>Task Master</title>
+<title>Jupyter Notebook Service</title>
 {% endblock %}
 
 {% block body %}
 <div class="content">
-    <h1 style="text-align: center">Task Master</h1>
+    <h1 style="text-align: center">Jupyter Notebook Service</h1>
     
     <div class="form">
 	<form action="/" method="POST">
@@ -17,10 +17,11 @@
 		<a><font size="4">Virtual environment name:</font></a>
 		<br>
 		{{ opt_form.env_name }}
-		<br>
 		<input type="submit" name="submit_button"></input>	
 		<br>
 		<br>
+        <br>
+        <br>
 	</form> 
     </div>
 	
