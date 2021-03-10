@@ -42,3 +42,11 @@ td {
 ul#py_ver {
     list-style-position: inside;
 }
+
+
+body{
+    background: url(https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/1e2d799c-9786-43bb-8e1e-6fe964950e43/d4fe2k2-d2f5dca0-0824-4ba2-9119-21cb3c982ae4.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOiIsImlzcyI6InVybjphcHA6Iiwib2JqIjpbW3sicGF0aCI6IlwvZlwvMWUyZDc5OWMtOTc4Ni00M2JiLThlMWUtNmZlOTY0OTUwZTQzXC9kNGZlMmsyLWQyZjVkY2EwLTA4MjQtNGJhMi05MTE5LTIxY2IzYzk4MmFlNC5qcGcifV1dLCJhdWQiOlsidXJuOnNlcnZpY2U6ZmlsZS5kb3dubG9hZCJdfQ.RvuXDicAILNVsETKBge15KPFxZUeP7TKFZdd10DRHDc);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-attachment: scroll;
+}
