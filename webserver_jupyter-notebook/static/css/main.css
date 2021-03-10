@@ -7,8 +7,9 @@ body, html {
 .content {
     text-align: center;
     margin: 0 auto;
-    width: 400px;
+    width: 1200px;
 }
+
 
 table, td, th {
     border: 1px solid #aaa;
@@ -36,4 +37,8 @@ td {
 
 #content {
     width: 70%;
+}
+
+ul#py_ver {
+    list-style-position: inside;
 }
