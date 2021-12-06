@@ -30,17 +30,17 @@ Reference: https://arxiv.org/pdf/1805.02798.pdf
 1. Install environment  
 
 
-2. run preprocess  
+2. Run preprocess  
 ```
 python preprocess.py
 ```
-generate 6 folder including:  
-train_img_normal  
-train_mask_normal  
-train_img_abnormal  
-train_mask_abnormal  
-test_img  
-test_mask  
+Generate 6 folder, including:  
+  train_img_normal  
+  train_mask_normal  
+  train_img_abnormal  
+  train_mask_abnormal  
+  test_img  
+  test_mask  
 
 3. Setting Config, and use pre-train weight or not  
 ```
