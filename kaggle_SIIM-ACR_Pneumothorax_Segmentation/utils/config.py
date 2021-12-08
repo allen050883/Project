@@ -17,6 +17,7 @@ class Config:
 
         # Save directory
         self.MODEL_SAVE_DIR = 'model_save'
+        self.CHECK_DATASET_DIR = 'check_dataset'
         self.PRED_SAVE_DIR = 'pred_train_dice_score_0.7375_val_dice_score_0.6585'
 
         # Model weight
