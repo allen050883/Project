@@ -7,6 +7,7 @@ pytorch 1.8.1
 
 ## Data preprocess   
 Turn dcm files into jpg files; rle to mask into jpg files    
+![alt text](https://github.com/allen050883/Project/blob/main/kaggle_SIIM-ACR_Pneumothorax_Segmentation/check_dataset/1.2.276.0.7230010.3.1.4.8323329.1909.1517875170.188918.jpg)
   
 ## DataLoader  
 Reading all files complete path, use cv2.imwrite open images  
