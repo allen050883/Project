@@ -4,7 +4,7 @@ class Config:
         self.TRAIN_TEST_SPLIT = 0.8
 
         # Epoch from START_EPOCH to END_EPOCH
-        self.START_EPOCH = 43
+        self.START_EPOCH = 1
         self.END_EPOCH = 500
 
         # Learning rate
