@@ -6,7 +6,7 @@ ubuntu 20.04 + cuda 11.1 + cudnn 8.0.5
 pytorch 1.8.1  
 
 ## Data preprocess   
-train-valid split for 0.8, turn dcm files into jpg files  
+Turn dcm files into jpg files; rle to mask into jpg files    
   
 ## DataLoader  
 Reading all files complete path, use cv2.imwrite open images  
