@@ -40,14 +40,17 @@ Reference Code: https://github.com/lessw2020/Ranger-Deep-Learning-Optimizer
   
 ## Loss  
 score: dice-score (from offical websites), but need to modify  
-Combo loss: dice_loss + binary_cross_entropy_loss
-Proposed loss: dice loss + 4 * focal loss
-Reference: https://arxiv.org/pdf/1805.02798.pdf  
+Combo loss: dice_loss + binary_cross_entropy_loss  
+Proposed loss: dice loss + 4 * focal loss  
+Reference: https://arxiv.org/pdf/1805.02798.pdf    
   
   
 # How to run the code?  
 1. Install environment  
-
+nvidia driver 460, cuda 11.1, cudnn 8.0.5. 
+```
+pip install -r requirements.txt
+```
 
 2. Run preprocess  
 ```
