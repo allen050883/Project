@@ -16,7 +16,7 @@ Data Argumentation use albumentations
 import albumentations as A
 A.Compose([
     A.HorizontalFlip(),
-    A.OneOf([
+<!--     A.OneOf([
         A.RandomContrast(),
         A.RandomGamma(),
         A.RandomBrightness(),
@@ -25,7 +25,7 @@ A.Compose([
         A.ElasticTransform(alpha=120, sigma=120 * 0.05, alpha_affine=120 * 0.03),
         A.GridDistortion(),
         A.OpticalDistortion(distort_limit=2, shift_limit=0.5),
-        ], p=0.3),
+        ], p=0.3), -->
     A.ShiftScaleRotate(),
 ])
 ```
