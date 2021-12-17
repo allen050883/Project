@@ -13,6 +13,7 @@ from utils.dataloader import read_data_path, MaskDataset
 from utils.loss import dice_score, get_dice_loss, get_focal_loss, combo_loss
 import albumentations as A
 
+
 import csv
 from tqdm import tqdm
 import numpy as np
@@ -28,6 +29,7 @@ os.makedirs(MODEL_SAVE_DIR, exist_ok=True)
 
 # Hyperparameter
 TRAIN_TEST_SPLIT = config.TRAIN_TEST_SPLIT
+UPSAMPLEING = config.UPSAMPLEING
 START_EPOCH = config.START_EPOCH
 END_EPOCH = config.END_EPOCH
 LERANING_RATE = config.LERANING_RATE
@@ -48,14 +50,14 @@ model.to(device)
 if PRETRAIN_WEIGHT:
     model.load_state_dict(torch.load(PRETRAIN_WEIGHT))
 
-# Freeze weight
-# for i, child in enumerate(model.children()):
-#     if i <= 7:
-#         for param in child.parameters():
-#             param.requires_grad = False
+# Use inital weight, leaky_relu use he_normalize
+def initialize_weights(m):
+  if isinstance(m, nn.Conv2d):
+      nn.init.kaiming_uniform_(m.weight.data)
+model.apply(initialize_weights)
 
 # Summary and plot model
-print(summary(model,input_size=(1, 512, 512)))
+print(summary(model,input_size=(1, 256, 256)))
 # Plot_model('ResUnet network', model)
 
 
@@ -67,21 +69,19 @@ read_data_path
     return: (list, list, list), train & valid & test file path list
              list -> (img_path, mask_path)
 """
-training_list, validation_list, testing_list = read_data_path(TRAIN_TEST_SPLIT)
+training_list, validation_list, testing_list = read_data_path(TRAIN_TEST_SPLIT, UPSAMPLEING)
+print('Training list count: {}'.format(len(training_list)))
+print('Validation list count: {}'.format(len(validation_list)))
+print('Testing list count: {}'.format(len(testing_list)))
 
 # Data Argumentation
 train_transform = A.Compose([
     A.HorizontalFlip(),
-    A.OneOf([
-        A.RandomContrast(),
-        A.RandomGamma(),
-        A.RandomBrightness(),
-        ], p=0.3),
-    A.OneOf([
-        A.ElasticTransform(alpha=120, sigma=120 * 0.05, alpha_affine=120 * 0.03),
-        A.GridDistortion(),
-        A.OpticalDistortion(distort_limit=2, shift_limit=0.5),
-        ], p=0.3),
+    # A.OneOf([
+    #     A.RandomContrast(),
+    #     A.RandomGamma(),
+    #     A.RandomBrightness(),
+    #     ], p=0.5),
     A.ShiftScaleRotate(),
 ])
 
@@ -107,8 +107,6 @@ optimizer = optim.Ranger(
     eps=1e-5,
     weight_decay=0
 )
-# optimizer = torch.optim.RMSprop(train_params, lr=LERANING_RATE, alpha=0.99, eps=1e-08, weight_decay=0, momentum=0.9, centered=True)
-
 # Pytorch model mode
 model.train()
 
@@ -145,32 +143,13 @@ with open(LEARNING_HISTORY_FILENAME, mode='w') as csv_file:
                 # Back propagation
                 loss.backward()
                 optimizer.step()
+                # nn.utils.clip_grad_value_(model.parameters(), clip_value=1.0)
                 tepoch.set_postfix(loss=loss.item(), dice_score=dice_scores.item())
                 number_iter += 1
                 # break
 
             train_dice_score = np.mean(np.array(train_dice_score))
             train_losses = np.mean(np.array(train_losses))
-
-        # # Recheck training loss
-        # train_dice_score = []
-        # train_losses = []
-        # with torch.no_grad():
-        #     for imgs, masks in tqdm(train_loader):
-        #         imgs_gpu = imgs.to(device)
-        #         outputs = model(imgs_gpu)
-        #         # outputs = torch.sigmoid(outputs) 
-        #         masks = masks.to(device)
-                
-        #         dice_scores = dice_score(outputs, masks)
-        #         loss = combo_loss(outputs, masks)
-                
-        #         train_dice_score.extend([dice_scores.item()])
-        #         train_losses.extend([loss.item()])
-        #         # break
-
-        #     train_dice_score = np.mean(np.array(train_dice_score))
-        #     train_losses = np.mean(np.array(train_losses))
             
 
         # Validation inference
@@ -197,6 +176,7 @@ with open(LEARNING_HISTORY_FILENAME, mode='w') as csv_file:
             path = "./{}/model_epoch_{:.1f}_train_dice_score_{:0.4f}_val_dice_score_{:0.4f}.pth".format(MODEL_SAVE_DIR, epoch, train_dice_score, val_dice_score)
             torch.save(model.state_dict(), path)
         
+
             # Write result in csv file
             writer.writerow({
                 "epoch": epoch,
