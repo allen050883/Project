@@ -38,4 +38,4 @@ def combo_loss(inputs, targets):
     BCE = F.binary_cross_entropy(inputs, targets, reduction='mean')
     focal_loss = get_focal_loss(inputs, targets)
     
-    return 1*dice_loss + 4*focal_loss
+    return focal_loss - torch.log(1-dice_loss)
