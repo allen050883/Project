@@ -11,7 +11,7 @@ TEST_MASK_DIR = './test_mask/'
 
 
 
-def read_data_path(TRAIN_TEST_SPLIT=0.75):
+def read_data_path(TRAIN_TEST_SPLIT=0.8, UPSAMPLEING=False):
     # Read data list and sort
     train_img_normal_dir = [os.path.join(TRAIN_IMG_NORMAL_DIR, i) for i in os.listdir(TRAIN_IMG_NORMAL_DIR)]
     train_img_normal_dir.sort()
@@ -25,13 +25,17 @@ def read_data_path(TRAIN_TEST_SPLIT=0.75):
     # Tuple for img and mask
     train_normal_list = [(data, label) for data, label in zip(train_img_normal_dir, train_mask_normal_dir)]
     train_abnormal_list = [(data, label) for data, label in zip(train_img_abnormal_dir, train_mask_abnormal_dir)]
+
     # Random list
     random.seed(2021)
     random.shuffle(train_normal_list)
     random.seed(2021)
     random.shuffle(train_abnormal_list)
-    # Split train valid data
-    training_list = train_normal_list[:int(len(train_normal_list)*TRAIN_TEST_SPLIT)] + train_abnormal_list[:int(len(train_abnormal_list)*TRAIN_TEST_SPLIT)]
+
+    # Split train valid data, upsampling
+    if UPSAMPLEING==True: upsample_rate = 4
+    else: upsample_rate = 1
+    training_list = train_normal_list[:int(len(train_normal_list)*TRAIN_TEST_SPLIT)] + train_abnormal_list[:int(len(train_abnormal_list)*TRAIN_TEST_SPLIT)] * upsample_rate
     validation_list = train_normal_list[int(len(train_normal_list)*TRAIN_TEST_SPLIT):] + train_abnormal_list[int(len(train_abnormal_list)*TRAIN_TEST_SPLIT):]
 
 
