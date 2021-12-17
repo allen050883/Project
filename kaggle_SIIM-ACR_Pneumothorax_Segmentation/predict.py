@@ -11,11 +11,13 @@ from model import Unet
 from utils.dataloader import read_data_path, MaskDataset
 from torch.utils.data import DataLoader
 from utils.config import Config
+from utils.loss import dice_score
 
 # Hyperparameter
 config = Config()
 TRAIN_TEST_SPLIT = config.TRAIN_TEST_SPLIT
 BATCH_SIZE_VALIDATION = config.BATCH_SIZE_VALIDATION
+BATCH_SIZE_TESTING = config.BATCH_SIZE_TESTING
 PRED_SAVE_DIR = config.PRED_SAVE_DIR
 os.makedirs(PRED_SAVE_DIR, exist_ok=True)
 INFERENCE_WEIGHT = config.INFERENCE_WEIGHT
@@ -46,7 +48,17 @@ val_dataset = MaskDataset(validation_list)
 val_loader = DataLoader(val_dataset, batch_size=BATCH_SIZE_VALIDATION, shuffle=False, drop_last=True)
 
 
-# Visualize predict img
+# Confusion matrix, postive = abnormal; negative = normal
+TP = 0; FP = 0
+FN = 0; TN = 0
+"""
+TP => mask: abnormal, pred: abnormal
+FP => mask: normal, pred: abnormal
+FN => mask: abnormal, pred: normal
+TN => mask: normal, pred: normal 
+"""
+
+dice_score_list = []
 number = 0
 with torch.no_grad():
     for imgs, masks in val_loader:
@@ -55,20 +67,36 @@ with torch.no_grad():
         outputs = torch.round(outputs) * 255
         masks = masks.to(device)
 
-        for index in range(BATCH_SIZE_VALIDATION):
-            img_origin = np.reshape(imgs_gpu[index].cpu().numpy(), (512, 512))
-            pred_img = np.reshape(outputs[index].cpu().numpy(), (512, 512))
-            mask_img = np.reshape(masks[index].cpu().numpy()*255, (512, 512))
+        # Dice score list
+        dice_scores = dice_score(outputs, masks)
+        dice_score_list.extend([dice_scores.item()])
 
-            if np.all(mask_img==0):
-                continue
-            fig, (ax1, ax2, ax3) = plt.subplots(1, 3)
-            ax1.imshow(img_origin, cmap=plt.cm.bone)
-            ax2.imshow(mask_img, cmap="gray")
-            ax3.imshow(pred_img, cmap="gray")
+        for index in range(BATCH_SIZE_VALIDATION):
+            img_origin = np.reshape(imgs_gpu[index].cpu().numpy(), (256, 256))
+            pred_img = np.reshape(outputs[index].cpu().numpy(), (256, 256))
+            mask_img = np.reshape(masks[index].cpu().numpy()*255, (256, 256))
+
+            # Confusion Matrix
+            if np.sum(mask_img)!=0 and np.sum(pred_img)!=0: TP += 1
+            if np.sum(mask_img)==0 and np.sum(pred_img)!=0: FP += 1
+            if np.sum(mask_img)!=0 and np.sum(pred_img)==0: FN += 1
+            if np.sum(mask_img)==0 and np.sum(pred_img)==0: TN += 1
+
             number += 1
             print(number)
 
-            fig.savefig(PRED_SAVE_DIR + '/' + str(number) + '.jpg', dpi=200) 
-            plt.close(fig)
+            if np.all(mask_img==0):
+                plt.imsave('./pred_normal_356' + '/' + str(number) + '.jpg', pred_img, cmap="gray") 
+            else:
+                plt.imsave('./pred_abnormal_356' + '/' + str(number) + '.jpg', pred_img, cmap="gray")
+                plt.imsave('./pred_abnormal_mask_356' + '/' + str(number) + '.jpg', mask_img, cmap="gray")
+            plt.close()
 
+print('TP: {}, FP: {}, FN: {}, TN: {}'.format(TP, FP, FN, TN))
+print('Accuracy: {}'.format((TP+TN)/(TP+FP+FN+TN)))
+print('Precision: {}'.format((TP)/(TP+FP)))
+print('Recall: {}'.format((TP)/(TP+FN)))  # Medical domain
+print('\n')
+print('Sensitivity: {}'.format((TP)/(TP+FN)))
+print('Specificity: {}'.format((TN)/(FP+TN)))
+print('Dice score: {}'.format(np.mean(np.array(dice_score_list))))
