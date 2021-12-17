@@ -16,7 +16,10 @@ Data Argumentation use albumentations
 import albumentations as A
 A.Compose([
     A.HorizontalFlip(),
-<!--     A.OneOf([
+    
+    # The brightness and contrast might enhance the difficulty of detetmining where the area full of air and no blood vessel.
+    """
+    A.OneOf([
         A.RandomContrast(),
         A.RandomGamma(),
         A.RandomBrightness(),
@@ -25,7 +28,9 @@ A.Compose([
         A.ElasticTransform(alpha=120, sigma=120 * 0.05, alpha_affine=120 * 0.03),
         A.GridDistortion(),
         A.OpticalDistortion(distort_limit=2, shift_limit=0.5),
-        ], p=0.3), -->
+        ], p=0.3),
+    """
+    
     A.ShiftScaleRotate(),
 ])
 ```
@@ -34,15 +39,18 @@ A.Compose([
 ResUnet, using pytorch resnet-50 layer for pre-train model  
 Reference: https://arxiv.org/pdf/1711.10684.pdf  
   
+CBAM, for attention block
+Reference: https://arxiv.org/pdf/1807.06521.pdf  
+  
 Optimizer using Ranger in torch-optimizer package  
 Paper: New Deep Learning Optimizer, Ranger: Synergistic combination of RAdam + LookAhead for the best of both (2019)  
 [https://medium.com/@lessw/new-deep-learning-optimizer-ranger-synergistic-combination-of-radam-lookahead-for-the-best-of-2dc83f79a48d]  
 Reference Code: https://github.com/lessw2020/Ranger-Deep-Learning-Optimizer  
   
 ## Loss  
-score: dice-score (from offical websites), but need to modify  
+score: dice_score (from offical websites)  
 Combo loss: dice_loss + binary_cross_entropy_loss  
-Proposed loss: dice loss + 4 * focal loss  
+Proposed loss: focal loss - log(dice_score) # The training data of normal:abnoraml = 1:1  
 Reference: https://arxiv.org/pdf/1805.02798.pdf    
   
   
