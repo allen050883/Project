@@ -1,5 +1,6 @@
 import torch
-import torch.nn as nn 
+import torch.nn as nn
+from attention import CBAM
 
 
 def Deconv(n_input, n_output, k_size=4, stride=2, padding=1):
@@ -46,6 +47,12 @@ class Unet(nn.Module):
         self.layer2 = resnet.layer2
         self.layer3 = resnet.layer3
         self.layer4 = resnet.layer4
+
+        # Convoulution block attention module
+        self.attn4 = CBAM(2048)
+        self.attn3 = CBAM(1024)
+        self.attn2 = CBAM(512)
+        self.attn1 = CBAM(128)
         
         # convolution layer, use to reduce the number of channel => reduce weight number
         self.conv_5 = Conv(2048, 512, 1, 1, 0)
@@ -85,18 +92,22 @@ class Unet(nn.Module):
         # up sample
         x4 = self.deconv4(x5)
         x4 = torch.cat([x4, skip_4], dim=1)
+        x4 = self.attn4(x4)
         x4 = self.conv_4(x4)
         
         x3 = self.deconv3(x4)
         x3 = torch.cat([x3, skip_3], dim=1)
+        x3 = self.attn3(x3)
         x3 = self.conv_3(x3)
+
         x2 = self.deconv2(x3)
-        
         x2 = torch.cat([x2, skip_2], dim=1)
+        x2 = self.attn2(x2)
         x2 = self.conv_2(x2)
         
         x1 = self.deconv1(x2)
         x1 = torch.cat([x1, skip_1], dim=1)
+        x1 = self.attn1(x1)
         x1 = self.conv_1(x1)
         
         x0 = self.deconv0(x1)
