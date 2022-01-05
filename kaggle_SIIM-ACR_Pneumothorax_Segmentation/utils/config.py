@@ -23,7 +23,7 @@ class Config:
         # Model weight
         self.PRETRAIN_WEIGHT = ''
         # self.PRETRAIN_WEIGHT = 'model_epoch_53.0_train_dice_score_0.9018_val_dice_score_0.9049.pth'
-        self.INFERENCE_WEIGHT = './model_save/model_epoch_356.0_train_dice_score_0.8079_val_dice_score_0.4811.pth'
+        self.INFERENCE_WEIGHT = './model_save/model_epoch_301.0_train_dice_score_0.7884_val_dice_score_0.4886.pth'
 
         # File writer
         self.MODEL_SAVE_DIR = "model_save"
